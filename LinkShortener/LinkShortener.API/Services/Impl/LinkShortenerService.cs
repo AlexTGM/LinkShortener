@@ -19,11 +19,15 @@ namespace LinkShortener.API.Services.Impl
 
         public async Task<string> CreateShortLinkAsync(string fullLink)
         {
-            var shortLink = _generator.CreateShortLink(7);
+            while (true)
+            {
+                var shortLink = _generator.CreateShortLink(7);
 
-            await _repository.InsertAsync(new ShortLink(shortLink, fullLink));
+                if (await IsShortLinkExists(shortLink)) continue;
+                await _repository.InsertAsync(new ShortLink(shortLink, fullLink));
 
-            return shortLink;
+                return shortLink;
+            }
         }
 
         public async Task<IEnumerable<ShortLink>> GetAllShortenedLinksAsync()
@@ -34,6 +38,11 @@ namespace LinkShortener.API.Services.Impl
         public async Task<ShortLink> GetFullLinkAsync(string shortLink)
         {
             return (await _repository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink);
+        }
+
+        private async Task<bool> IsShortLinkExists(string shortLink)
+        {
+            return (await _repository.GetAllAsync()).Any(l => l.Key == shortLink);
         }
     }
 }

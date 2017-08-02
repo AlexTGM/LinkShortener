@@ -25,7 +25,7 @@ namespace LinkShortener.API
         }
 
         // GET: api/ShortLinks/ABCDEF
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{value}", Name = "Get")]
         public async Task<ShortLink> Get(string value)
         {
             return await _service.GetFullLinkAsync(value);

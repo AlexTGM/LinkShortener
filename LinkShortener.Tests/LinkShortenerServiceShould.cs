@@ -34,16 +34,30 @@ namespace LinkShortener.Tests
         }
 
         [Fact]
+        public async void ProduceUniqueShortLinks()
+        {
+            var currentIndex = 0;
+            var shortLinks = new [] { "ABCD", "ABCE", "ABCDEF" };
+
+            _shortLinkGenerator.Setup(s => s.CreateShortLink(It.IsAny<int>()))
+                .Returns(() => shortLinks[currentIndex++]);
+
+            var actual = await _service.CreateShortLinkAsync(It.IsAny<string>());
+
+            actual.ShouldBeEquivalentTo(shortLinks[2]);
+        }
+
+        [Fact]
         public async void CreateShortLink()
         {
-            _shortLinkGenerator.Setup(s => s.CreateShortLink(It.IsAny<int>())).Returns("ABCD");
+            _shortLinkGenerator.Setup(s => s.CreateShortLink(It.IsAny<int>())).Returns("ABCDEF");
 
             var actual = await _service.CreateShortLinkAsync(It.IsAny<string>());
 
             _shortLinkGenerator.Verify(s => s.CreateShortLink(It.IsAny<int>()), Times.Once);
             _repository.Verify(r => r.InsertAsync(It.IsAny<ShortLink>()), Times.Once);
 
-            actual.ShouldBeEquivalentTo("ABCD");
+            actual.ShouldBeEquivalentTo("ABCDEF");
         }
 
         [Fact]
