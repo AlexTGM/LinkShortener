@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using FluentAssertions;
+using LinkShortener.API.Impl.LinkShortener.Services;
 using LinkShortener.API.Models;
 using LinkShortener.API.Repository;
-using LinkShortener.API.Services;
-using LinkShortener.API.Services.Impl;
+using LinkShortener.API.Services.LinkShortener;
+using LinkShortener.API.Services.LinkShortener.Impl;
 using Moq;
 using Xunit;
 
@@ -12,7 +13,6 @@ namespace LinkShortener.Tests
     public class LinkShortenerServiceShould
     {
         private readonly Mock<IRepository<ShortLink>> _repository;
-        private readonly Mock<IShortLinkGenerator> _shortLinkGenerator;
 
         private readonly ILinkShortenerService _service;
 
@@ -25,39 +25,12 @@ namespace LinkShortener.Tests
 
         public LinkShortenerServiceShould()
         {
-            _shortLinkGenerator = new Mock<IShortLinkGenerator>();
+            var collisionResolverBuilder = new Mock<IBasicCollisionResolverBuilder>();
 
             _repository = new Mock<IRepository<ShortLink>>();
             _repository.Setup(r => r.GetAllAsync()).ReturnsAsync(_shortLinks);
 
-            _service = new LinkShortenerService(_repository.Object, _shortLinkGenerator.Object);
-        }
-
-        [Fact]
-        public async void ProduceUniqueShortLinks()
-        {
-            var currentIndex = 0;
-            var shortLinks = new [] { "ABCD", "ABCE", "ABCDEF" };
-
-            _shortLinkGenerator.Setup(s => s.CreateShortLink(It.IsAny<int>()))
-                .Returns(() => shortLinks[currentIndex++]);
-
-            var actual = await _service.CreateShortLinkAsync(It.IsAny<string>());
-
-            actual.ShouldBeEquivalentTo(shortLinks[2]);
-        }
-
-        [Fact]
-        public async void CreateShortLink()
-        {
-            _shortLinkGenerator.Setup(s => s.CreateShortLink(It.IsAny<int>())).Returns("ABCDEF");
-
-            var actual = await _service.CreateShortLinkAsync(It.IsAny<string>());
-
-            _shortLinkGenerator.Verify(s => s.CreateShortLink(It.IsAny<int>()), Times.Once);
-            _repository.Verify(r => r.InsertAsync(It.IsAny<ShortLink>()), Times.Once);
-
-            actual.ShouldBeEquivalentTo("ABCDEF");
+            _service = new LinkShortenerService(_repository.Object, collisionResolverBuilder.Object);
         }
 
         [Fact]

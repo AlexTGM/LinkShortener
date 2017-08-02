@@ -1,4 +1,4 @@
-namespace LinkShortener.API.Services
+namespace LinkShortener.API.Services.LinkShortener
 {
     public interface IShortLinkGenerator
     {

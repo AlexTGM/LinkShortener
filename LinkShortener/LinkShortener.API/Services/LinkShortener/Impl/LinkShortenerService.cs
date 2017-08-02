@@ -1,33 +1,33 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LinkShortener.API.Impl.LinkShortener.Services;
 using LinkShortener.API.Models;
 using LinkShortener.API.Repository;
 
-namespace LinkShortener.API.Services.Impl
+namespace LinkShortener.API.Services.LinkShortener.Impl
 {
     public class LinkShortenerService : ILinkShortenerService
     {
         private readonly IRepository<ShortLink> _repository;
-        private readonly IShortLinkGenerator _generator;
+        private readonly IBasicCollisionResolverBuilder _builder;
 
-        public LinkShortenerService(IRepository<ShortLink> repository, IShortLinkGenerator generator)
+        public LinkShortenerService(IRepository<ShortLink> repository, IBasicCollisionResolverBuilder collisionResolverBuilder)
         {
             _repository = repository;
-            _generator = generator;
+            _builder = collisionResolverBuilder;
         }
 
         public async Task<string> CreateShortLinkAsync(string fullLink)
         {
-            while (true)
-            {
-                var shortLink = _generator.CreateShortLink(7);
+            Func<string, Task<bool>> checkFunction = ShortLinkExists;
+            Func<ShortLink, Task> onSuccessFunction = _repository.InsertAsync;
 
-                if (await IsShortLinkExists(shortLink)) continue;
-                await _repository.InsertAsync(new ShortLink(shortLink, fullLink));
+            var collisionResolver = _builder.WithOnSuccessFunction(onSuccessFunction)
+                .WithMaximumAttemptsCount(5).WithCheckExistenceFunction(checkFunction).Build();
 
-                return shortLink;
-            }
+            return await collisionResolver.FindSuitableShortLinkAsync(fullLink);
         }
 
         public async Task<IEnumerable<ShortLink>> GetAllShortenedLinksAsync()
@@ -40,7 +40,7 @@ namespace LinkShortener.API.Services.Impl
             return (await _repository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink);
         }
 
-        private async Task<bool> IsShortLinkExists(string shortLink)
+        private async Task<bool> ShortLinkExists(string shortLink)
         {
             return (await _repository.GetAllAsync()).Any(l => l.Key == shortLink);
         }

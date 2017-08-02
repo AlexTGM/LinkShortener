@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LinkShortener.API.Models;
 
-namespace LinkShortener.API.Services
+namespace LinkShortener.API.Services.LinkShortener
 {
     public interface ILinkShortenerService
     {

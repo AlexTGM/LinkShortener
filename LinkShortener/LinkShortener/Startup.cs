@@ -1,8 +1,9 @@
-﻿using LinkShortener.API.Models;
+﻿using LinkShortener.API.Impl.LinkShortener.Services;
+using LinkShortener.API.Models;
 using LinkShortener.API.Repository;
 using LinkShortener.API.Repository.Impl;
-using LinkShortener.API.Services;
-using LinkShortener.API.Services.Impl;
+using LinkShortener.API.Services.LinkShortener;
+using LinkShortener.API.Services.LinkShortener.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,8 @@ namespace LinkShortener
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.AddSingleton<IBasicCollisionResolverBuilder, BasicCollisionResolverBuilder>();
 
             services.AddSingleton<LinkShortenerContext>();
             services.AddSingleton<IRepository<ShortLink>, Repository<ShortLink>>();
