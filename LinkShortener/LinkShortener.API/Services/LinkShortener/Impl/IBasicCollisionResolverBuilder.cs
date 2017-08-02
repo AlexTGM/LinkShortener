@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LinkShortener.API.Models;
-using LinkShortener.API.Services.LinkShortener.Impl;
 
-namespace LinkShortener.API.Impl.LinkShortener.Services
+namespace LinkShortener.API.Services.LinkShortener.Impl
 {
     public interface IBasicCollisionResolverBuilder
     {

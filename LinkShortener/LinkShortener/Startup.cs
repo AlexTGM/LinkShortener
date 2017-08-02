@@ -1,5 +1,4 @@
-﻿using LinkShortener.API.Impl.LinkShortener.Services;
-using LinkShortener.API.Models;
+﻿using LinkShortener.API.Models;
 using LinkShortener.API.Repository;
 using LinkShortener.API.Repository.Impl;
 using LinkShortener.API.Services.LinkShortener;

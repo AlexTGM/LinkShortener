@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using LinkShortener.API.Impl.LinkShortener.Services;
 using LinkShortener.API.Models;
 
 namespace LinkShortener.API.Services.LinkShortener.Impl
