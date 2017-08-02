@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LinkShortener.API.Models;
-using LinkShortener.API.Services;
+using LinkShortener.API.Services.LinkShortener;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkShortener.API

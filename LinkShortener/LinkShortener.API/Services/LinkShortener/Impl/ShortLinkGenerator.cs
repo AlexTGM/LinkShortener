@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace LinkShortener.API.Services.Impl
+namespace LinkShortener.API.Services.LinkShortener.Impl
 {
     public class ShortLinkGenerator : IShortLinkGenerator
     {
