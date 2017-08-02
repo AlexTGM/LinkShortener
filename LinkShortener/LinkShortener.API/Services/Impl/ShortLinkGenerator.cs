@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 
-namespace LinkShortener.API
+namespace LinkShortener.API.Services.Impl
 {
-    public class LinkShortenerService : ILinkShortenerService
+    public class ShortLinkGenerator : IShortLinkGenerator
     {
         private static readonly Random Random = new Random();
 

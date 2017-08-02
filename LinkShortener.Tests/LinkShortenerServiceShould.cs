@@ -1,41 +1,81 @@
-using Xunit;
-using FluentAssertions;
-using LinkShortener.API;
 using System.Collections.Generic;
+using FluentAssertions;
+using LinkShortener.API.Models;
+using LinkShortener.API.Repository;
+using LinkShortener.API.Services;
+using LinkShortener.API.Services.Impl;
+using Moq;
+using Xunit;
 
 namespace LinkShortener.Tests
 {
     public class LinkShortenerServiceShould
     {
-        private readonly ILinkShortenerService _linkShortenerService;
+        private readonly Mock<IRepository<ShortLink>> _repository;
+        private readonly Mock<IShortLinkGenerator> _shortLinkGenerator;
+
+        private readonly ILinkShortenerService _service;
+
+        private readonly IEnumerable<ShortLink> _shortLinks = new[]
+        {
+            new ShortLink("ABCD", "https://yandex.com"),
+            new ShortLink("ABCE", "https://google.com"),
+            new ShortLink("ABCF", "https://bing.com")
+        };
 
         public LinkShortenerServiceShould()
         {
-            _linkShortenerService = new LinkShortenerService();
-        }
+            _shortLinkGenerator = new Mock<IShortLinkGenerator>();
 
-        [Theory]
-        [InlineData("http://google.com")]
-        [InlineData("http://yandex.com")]
-        public void CreateShortLink(string inputLink)
-        {
-            var actual = _linkShortenerService.CreateShortLink(9);
+            _repository = new Mock<IRepository<ShortLink>>();
+            _repository.Setup(r => r.GetAllAsync()).ReturnsAsync(_shortLinks);
 
-            actual.Should().MatchRegex("[A-Z0-9]{9}");
+            _service = new LinkShortenerService(_repository.Object, _shortLinkGenerator.Object);
         }
 
         [Fact]
-        public void ShouldProduceUniqueValues()
+        public async void CreateShortLink()
         {
-            var generatedLinks = new HashSet<string>();
+            _shortLinkGenerator.Setup(s => s.CreateShortLink(It.IsAny<int>())).Returns("ABCD");
 
-            for (var i = 0; i < 1000000; i++)
-            {
-                var link = _linkShortenerService.CreateShortLink(9);
-                generatedLinks.Add(link);
-            }
+            var actual = await _service.CreateShortLinkAsync(It.IsAny<string>());
 
-            generatedLinks.Should().HaveCount(1000000);
+            _shortLinkGenerator.Verify(s => s.CreateShortLink(It.IsAny<int>()), Times.Once);
+            _repository.Verify(r => r.InsertAsync(It.IsAny<ShortLink>()), Times.Once);
+
+            actual.ShouldBeEquivalentTo("ABCD");
+        }
+
+        [Fact]
+        public async void GetAllShortenedLinks()
+        {
+            IEnumerable<ShortLink> expectation = new[] { new ShortLink("", "") };
+
+            _repository.Setup(r => r.GetAllAsync()).ReturnsAsync(expectation);
+
+            var actual = await _service.GetAllShortenedLinksAsync();
+
+            _repository.Verify(r => r.GetAllAsync(), Times.Once);
+            
+            actual.ShouldBeEquivalentTo(expectation);
+        }
+
+        [Fact]
+        public async void ReturnFullLink()
+        {
+            const string excpectation = "https://google.com";
+
+            var actual = await _service.GetFullLinkAsync("ABCE");
+
+            actual.FullLink.ShouldBeEquivalentTo(excpectation);
+        }
+
+        [Fact]
+        public async void ReturnNullIfShortLinkDoesNotExist()
+        {
+            var actual = await _service.GetFullLinkAsync("AEFC");
+
+            actual.ShouldBeEquivalentTo(null);
         }
     }
 }
