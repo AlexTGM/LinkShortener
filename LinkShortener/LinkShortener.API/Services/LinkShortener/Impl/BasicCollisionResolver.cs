@@ -6,8 +6,8 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
 {
     public class BasicCollisionResolver : ICollisionResolver
     {
-        private readonly IShortLinkGenerator _shortLinkGenerator;
         private readonly Func<string, Task<bool>> _checkExistenceFunction;
+        private readonly IShortLinkGenerator _shortLinkGenerator;
 
         public BasicCollisionResolver(IShortLinkGenerator shortLinkGenerator,
             Func<string, Task<bool>> checkExistenceFunction = null)

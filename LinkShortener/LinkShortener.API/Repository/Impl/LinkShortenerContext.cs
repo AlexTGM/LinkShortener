@@ -1,4 +1,3 @@
-using LinkShortener.API.Models;
 using LinkShortener.API.Models.Database;
 using LinkShortener.API.Repository.Maps;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -19,7 +18,8 @@ namespace LinkShortener.API.Repository.Impl
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=link_shorneter;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(
+                "Server=(localdb)\\mssqllocaldb;Database=link_shorneter;Trusted_Connection=True;");
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LinkShortener.API.Models;
 using LinkShortener.API.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +28,7 @@ namespace LinkShortener.API.Repository.Impl
 
         public async Task InsertAsync(T entity)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity)); 
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
 
             await _entities.AddAsync(entity);
             await _context.SaveChangesAsync();

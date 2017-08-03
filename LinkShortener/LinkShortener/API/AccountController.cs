@@ -10,8 +10,8 @@ namespace LinkShortener.API
     [Produces("application/json")]
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
 
         public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
         {

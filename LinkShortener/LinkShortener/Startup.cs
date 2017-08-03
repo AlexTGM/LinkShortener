@@ -22,15 +22,15 @@ namespace LinkShortener
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -45,13 +45,9 @@ namespace LinkShortener
                     {
                         if (ctx.Request.Path.StartsWithSegments("/api") &&
                             ctx.Response.StatusCode == (int) HttpStatusCode.OK)
-                        {
                             ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                        }
                         else
-                        {
                             ctx.Response.Redirect(ctx.RedirectUri);
-                        }
                         return Task.FromResult(0);
                     }
                 };
@@ -80,7 +76,7 @@ namespace LinkShortener
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            
+
             app.UseRewriter(new RewriteOptions().AddRewrite("([A-Z0-9]{7})", "api/shortened/$1", false));
 
             app.UseIdentity();

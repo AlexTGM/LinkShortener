@@ -1,4 +1,3 @@
-using LinkShortener.API.Models;
 using LinkShortener.API.Models.Database;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

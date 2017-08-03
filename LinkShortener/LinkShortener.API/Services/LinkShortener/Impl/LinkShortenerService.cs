@@ -9,10 +9,10 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
 {
     public class LinkShortenerService : ILinkShortenerService
     {
-        private readonly IRepository<ShortLink> _shortLinksRepository;
         private readonly ICollisionResolver _collisionResolver;
+        private readonly IRepository<ShortLink> _shortLinksRepository;
 
-        public LinkShortenerService(IRepository<ShortLink> shortLinksRepository, 
+        public LinkShortenerService(IRepository<ShortLink> shortLinksRepository,
             ICollisionResolverFactory<ICollisionResolver> collisionResolverFactory)
         {
             _shortLinksRepository = shortLinksRepository;
@@ -29,15 +29,25 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
         }
 
         public async Task<IEnumerable<ShortLinkDto>> GetAllShortenedLinksAsync()
-            => (await _shortLinksRepository.GetAllAsync()).Select(x => new ShortLinkDto(x));
+        {
+            return (await _shortLinksRepository.GetAllAsync()).Select(x => new ShortLinkDto(x));
+        }
 
         public async Task<ShortLinkDto> GetFullLinkAsync(string shortLink)
-            => new ShortLinkDto((await _shortLinksRepository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink));
+        {
+            return new ShortLinkDto(
+                (await _shortLinksRepository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink));
+        }
 
         public async Task<IEnumerable<ShortLinkDto>> GetAllShortenedLinksRelatedToUserAsync(User user)
-            => (await _shortLinksRepository.GetAllAsync()).Where(l => l.User == user).Select(x => new ShortLinkDto(x));
+        {
+            return (await _shortLinksRepository.GetAllAsync()).Where(l => l.User == user)
+                .Select(x => new ShortLinkDto(x));
+        }
 
         private async Task<bool> ShortLinkExists(string shortLink)
-            => (await _shortLinksRepository.GetAllAsync()).Any(l => l.Key == shortLink);
+        {
+            return (await _shortLinksRepository.GetAllAsync()).Any(l => l.Key == shortLink);
+        }
     }
 }

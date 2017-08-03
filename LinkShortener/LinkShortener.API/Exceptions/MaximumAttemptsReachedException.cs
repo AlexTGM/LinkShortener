@@ -6,11 +6,11 @@ namespace LinkShortener.API.Exceptions
     {
         private readonly int _maximumAttemptsCount;
 
-        public override string Message => $"Maximum Attempts Count Reached: {_maximumAttemptsCount}";
-
         public MaximumAttemptsReachedException(int maximumAttemptsCount)
         {
             _maximumAttemptsCount = maximumAttemptsCount;
         }
+
+        public override string Message => $"Maximum Attempts Count Reached: {_maximumAttemptsCount}";
     }
 }
