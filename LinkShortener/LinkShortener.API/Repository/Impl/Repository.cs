@@ -26,6 +26,11 @@ namespace LinkShortener.API.Repository.Impl
             return await _entities.SingleOrDefaultAsync(s => s.Id == id);
         }
 
+        public async Task UpdateAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
         public async Task InsertAsync(T entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
