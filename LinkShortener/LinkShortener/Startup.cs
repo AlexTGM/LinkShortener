@@ -1,7 +1,6 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
-using LinkShortener.API.Models;
+using LinkShortener.API.Models.Database;
 using LinkShortener.API.Repository;
 using LinkShortener.API.Repository.Impl;
 using LinkShortener.API.Services.LinkShortener;

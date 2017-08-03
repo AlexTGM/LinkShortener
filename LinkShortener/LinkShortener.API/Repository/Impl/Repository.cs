@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LinkShortener.API.Models;
+using LinkShortener.API.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace LinkShortener.API.Repository.Impl

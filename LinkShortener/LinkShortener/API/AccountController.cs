@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
-using LinkShortener.API.Models;
+using LinkShortener.API.Models.Database;
+using LinkShortener.API.Models.Requests;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,13 +21,13 @@ namespace LinkShortener.API
 
         [HttpPost]
         [Route("signup")]
-        public async Task<IdentityResult> Signup([FromBody] SigninModel signinModel)
+        public async Task<IdentityResult> SignUp([FromBody] SignUpRequest signUpRequest)
         {
             if (!ModelState.IsValid) return IdentityResult.Failed();
 
-            var user = new User(signinModel.UserName);
+            var user = new User(signUpRequest.UserName);
 
-            var identityResult = await _userManager.CreateAsync(user, signinModel.Password);
+            var identityResult = await _userManager.CreateAsync(user, signUpRequest.Password);
 
             if (!identityResult.Succeeded) return identityResult;
 
@@ -37,18 +38,20 @@ namespace LinkShortener.API
 
         [HttpGet]
         [Route("signout")]
-        public async Task Signout()
+        public async Task SignOut()
         {
             await _signInManager.SignOutAsync();
         }
 
         [HttpPost]
         [Route("signin")]
-        public async Task<bool> Signin([FromBody] SigninModel signinModel)
+        public async Task<bool> SignIn([FromBody] SignInRequest signInRequest)
         {
-            var user = new User(signinModel.UserName);
+            var userName = signInRequest.UserName;
+            var password = signInRequest.Password;
+            var remember = signInRequest.Remember;
 
-            var result = await _signInManager.PasswordSignInAsync(user, signinModel.Password, true, false);
+            var result = await _signInManager.PasswordSignInAsync(userName, password, remember, false);
 
             return result.Succeeded;
         }

@@ -1,4 +1,5 @@
 using LinkShortener.API.Models;
+using LinkShortener.API.Models.Database;
 using LinkShortener.API.Repository.Maps;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

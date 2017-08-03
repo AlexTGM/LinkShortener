@@ -1,13 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace LinkShortener.API.Models
+namespace LinkShortener.API.Models.Database
 {
-    public class SigninModel
-    {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-    }
-
     public class User : IdentityUser
     {
         public User() { }

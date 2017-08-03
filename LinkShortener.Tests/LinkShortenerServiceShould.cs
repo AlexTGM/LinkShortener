@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LinkShortener.API.Models;
+using LinkShortener.API.Models.Database;
 using LinkShortener.API.Repository;
 using LinkShortener.API.Services.LinkShortener;
 using LinkShortener.API.Services.LinkShortener.Impl;

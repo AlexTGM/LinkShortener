@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LinkShortener.API.Models;
+using LinkShortener.API.Models.Database;
+using LinkShortener.API.Models.DTO;
 using LinkShortener.API.Services.LinkShortener;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,16 +26,16 @@ namespace LinkShortener.API
         
         [HttpGet]
         [Authorize]
-        public async Task<IEnumerable<ShortLink>> Get()
+        public async Task<IEnumerable<ShortLinkDto>> Get()
             => await _service.GetAllShortenedLinksRelatedToUserAsync(await CurrentUser);
-        
-        [HttpGet("{value}", Name = "Get")]
-        public async Task<ShortLink> Get(string value)
-            => await _service.GetFullLinkAsync(value);
+
+        [HttpGet("{shortLink}", Name = "Get")]
+        public IActionResult Get(string shortLink)
+            => Redirect(_service.GetFullLinkAsync(shortLink).Result.FullLink);
         
         [HttpPost]
         [Authorize]
-        public async Task<dynamic> Post([FromBody] string value)
-            => new {ShortLink = await _service.CreateShortLinkAsync(value, await CurrentUser)};
+        public async Task<dynamic> Post([FromBody] string fullLink)
+            => new {ShortLink = await _service.CreateShortLinkAsync(fullLink, await CurrentUser)};
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace LinkShortener.API.Models
+﻿namespace LinkShortener.API.Models.Database
 {
     public class ShortLink : BaseEntity
     {

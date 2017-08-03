@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LinkShortener.API.Models;
+using LinkShortener.API.Models.Database;
+using LinkShortener.API.Models.DTO;
 using LinkShortener.API.Repository;
 
 namespace LinkShortener.API.Services.LinkShortener.Impl
@@ -27,14 +28,14 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
             return shortLink;
         }
 
-        public async Task<IEnumerable<ShortLink>> GetAllShortenedLinksAsync()
-            => await _shortLinksRepository.GetAllAsync();
+        public async Task<IEnumerable<ShortLinkDto>> GetAllShortenedLinksAsync()
+            => (await _shortLinksRepository.GetAllAsync()).Select(x => new ShortLinkDto(x));
 
-        public async Task<ShortLink> GetFullLinkAsync(string shortLink)
-            => (await _shortLinksRepository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink);
+        public async Task<ShortLinkDto> GetFullLinkAsync(string shortLink)
+            => new ShortLinkDto((await _shortLinksRepository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink));
 
-        public async Task<IEnumerable<ShortLink>> GetAllShortenedLinksRelatedToUserAsync(User user)
-            => (await _shortLinksRepository.GetAllAsync()).Where(l => l.User == user);
+        public async Task<IEnumerable<ShortLinkDto>> GetAllShortenedLinksRelatedToUserAsync(User user)
+            => (await _shortLinksRepository.GetAllAsync()).Where(l => l.User == user).Select(x => new ShortLinkDto(x));
 
         private async Task<bool> ShortLinkExists(string shortLink)
             => (await _shortLinksRepository.GetAllAsync()).Any(l => l.Key == shortLink);
