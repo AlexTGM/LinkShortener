@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using LinkShortener.API.Models;
 
 namespace LinkShortener.API.Services.LinkShortener.Impl
 {
@@ -10,7 +9,6 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
 
         private readonly IShortLinkGenerator _shortLinkGenerator;
         
-        private Func<ShortLink, Task> _successFunction;
         private Func<string, Task<bool>> _checkFunction;
 
         public BasicCollisionResolverBuilder(IShortLinkGenerator shortLinkGenerator)
@@ -21,12 +19,6 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
         public IBasicCollisionResolverBuilder WithMaximumAttemptsCount(int attemptsCount)
         {
             _attemptsCount = attemptsCount;
-            return this;
-        }
-
-        public IBasicCollisionResolverBuilder WithOnSuccessFunction(Func<ShortLink, Task> function)
-        {
-            _successFunction = function;
             return this;
         }
 
@@ -41,8 +33,7 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
             var collisionResolver =
                 new BasicCollisionResolver(_shortLinkGenerator)
                 {
-                    CheckExistenceFunction = _checkFunction ?? (async str => await Task.Factory.StartNew(() => true)),
-                    OnSuccessFunction = _successFunction,
+                    CheckExistenceFunction = _checkFunction ?? (async str => await Task.Factory.StartNew(() => false)),
                     MaximumAttemptsCount = _attemptsCount
                 };
 

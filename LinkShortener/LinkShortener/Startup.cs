@@ -1,10 +1,15 @@
-﻿using LinkShortener.API.Models;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using LinkShortener.API.Models;
 using LinkShortener.API.Repository;
 using LinkShortener.API.Repository.Impl;
 using LinkShortener.API.Services.LinkShortener;
 using LinkShortener.API.Services.LinkShortener.Impl;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,6 +35,28 @@ namespace LinkShortener
         {
             services.AddMvc();
 
+            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<LinkShortenerContext>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = ctx =>
+                    {
+                        if (ctx.Request.Path.StartsWithSegments("/api") &&
+                            ctx.Response.StatusCode == (int) HttpStatusCode.OK)
+                        {
+                            ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                        }
+                        else
+                        {
+                            ctx.Response.Redirect(ctx.RedirectUri);
+                        }
+                        return Task.FromResult(0);
+                    }
+                };
+            });
+
             services.AddSingleton<IBasicCollisionResolverBuilder, BasicCollisionResolverBuilder>();
 
             services.AddSingleton<LinkShortenerContext>();
@@ -54,14 +81,9 @@ namespace LinkShortener
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseIdentity();
             app.UseStaticFiles();
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
         }
     }
 }

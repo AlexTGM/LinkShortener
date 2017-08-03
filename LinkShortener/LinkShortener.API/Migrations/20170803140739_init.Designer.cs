@@ -8,9 +8,10 @@ using LinkShortener.API.Repository.Impl;
 namespace LinkShortener.API.Migrations
 {
     [DbContext(typeof(LinkShortenerContext))]
-    partial class LinkShortenerContextModelSnapshot : ModelSnapshot
+    [Migration("20170803140739_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -59,11 +60,15 @@ namespace LinkShortener.API.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
+                    b.Property<string>("Login");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256);
+
+                    b.Property<string>("Password");
 
                     b.Property<string>("PasswordHash");
 

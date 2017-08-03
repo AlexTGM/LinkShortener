@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,39 +8,36 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
 {
     public class LinkShortenerService : ILinkShortenerService
     {
-        private readonly IRepository<ShortLink> _repository;
+        private readonly IRepository<ShortLink> _shortLinksRepository;
         private readonly IBasicCollisionResolverBuilder _builder;
 
-        public LinkShortenerService(IRepository<ShortLink> repository, IBasicCollisionResolverBuilder collisionResolverBuilder)
+        public LinkShortenerService(IRepository<ShortLink> shortLinksRepository, IBasicCollisionResolverBuilder collisionResolverBuilder)
         {
-            _repository = repository;
+            _shortLinksRepository = shortLinksRepository;
             _builder = collisionResolverBuilder;
         }
 
-        public async Task<string> CreateShortLinkAsync(string fullLink)
+        public async Task<string> CreateShortLinkAsync(string fullLink, User user)
         {
-            Func<string, Task<bool>> checkFunction = ShortLinkExists;
-            Func<ShortLink, Task> onSuccessFunction = _repository.InsertAsync;
+            var collisionResolver = _builder.WithMaximumAttemptsCount(5).WithCheckExistenceFunction(ShortLinkExists).Build();
 
-            var collisionResolver = _builder.WithOnSuccessFunction(onSuccessFunction)
-                .WithMaximumAttemptsCount(5).WithCheckExistenceFunction(checkFunction).Build();
+            var shortLink = await collisionResolver.FindSuitableShortLinkAsync();
 
-            return await collisionResolver.FindSuitableShortLinkAsync(fullLink);
+            await _shortLinksRepository.InsertAsync(new ShortLink(shortLink, fullLink) {User = user});
+
+            return shortLink;
         }
 
         public async Task<IEnumerable<ShortLink>> GetAllShortenedLinksAsync()
-        {
-            return await _repository.GetAllAsync();
-        }
+            => await _shortLinksRepository.GetAllAsync();
 
         public async Task<ShortLink> GetFullLinkAsync(string shortLink)
-        {
-            return (await _repository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink);
-        }
+            => (await _shortLinksRepository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink);
+
+        public async Task<IEnumerable<ShortLink>> GetAllShortenedLinksRelatedToUserAsync(User user)
+            => (await _shortLinksRepository.GetAllAsync()).Where(l => l.User == user);
 
         private async Task<bool> ShortLinkExists(string shortLink)
-        {
-            return (await _repository.GetAllAsync()).Any(l => l.Key == shortLink);
-        }
+            => (await _shortLinksRepository.GetAllAsync()).Any(l => l.Key == shortLink);
     }
 }

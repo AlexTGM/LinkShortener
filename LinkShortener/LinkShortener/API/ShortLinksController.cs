@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LinkShortener.API.Models;
 using LinkShortener.API.Services.LinkShortener;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkShortener.API
@@ -11,31 +13,28 @@ namespace LinkShortener.API
     public class ShortLinksController : Controller
     {
         private readonly ILinkShortenerService _service;
+        private readonly UserManager<User> _userManager;
 
-        public ShortLinksController(ILinkShortenerService service)
+        private Task<User> CurrentUser => _userManager.GetUserAsync(User);
+
+        public ShortLinksController(ILinkShortenerService service, UserManager<User> userManager)
         {
             _service = service;
-        }
-
-        // GET: api/ShortLinks
-        [HttpGet]
-        public async Task<IEnumerable<ShortLink>> Get()
-        {
-            return await _service.GetAllShortenedLinksAsync();
-        }
-
-        // GET: api/ShortLinks/ABCDEF
-        [HttpGet("{value}", Name = "Get")]
-        public async Task<ShortLink> Get(string value)
-        {
-            return await _service.GetFullLinkAsync(value);
+            _userManager = userManager;
         }
         
-        // POST: api/ShortLinks
+        [HttpGet]
+        [Authorize]
+        public async Task<IEnumerable<ShortLink>> Get()
+            => await _service.GetAllShortenedLinksRelatedToUserAsync(await CurrentUser);
+        
+        [HttpGet("{value}", Name = "Get")]
+        public async Task<ShortLink> Get(string value)
+            => await _service.GetFullLinkAsync(value);
+        
         [HttpPost]
-        public async Task<string> Post([FromBody]string value)
-        {
-            return await _service.CreateShortLinkAsync(value);
-        }
+        [Authorize]
+        public async Task<dynamic> Post([FromBody] string value)
+            => new {ShortLink = await _service.CreateShortLinkAsync(value, await CurrentUser)};
     }
 }
