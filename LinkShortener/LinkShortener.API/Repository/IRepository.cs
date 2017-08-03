@@ -9,5 +9,6 @@ namespace LinkShortener.API.Repository
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetAsync(long id);
         Task InsertAsync(T entity);
+        Task UpdateAsync();
     }
 }

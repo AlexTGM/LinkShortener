@@ -21,5 +21,6 @@
         public User User { get; set; }
         public string Key { get; set; }
         public string FullLink { get; set; }
+        public int CallsCount { get; set; }
     }
 }

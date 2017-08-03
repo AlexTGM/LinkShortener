@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LinkShortener.API.Models;
 using LinkShortener.API.Models.Database;
 using LinkShortener.API.Repository;
 using LinkShortener.API.Services.LinkShortener;
@@ -26,11 +25,11 @@ namespace LinkShortener.Tests
         {
             _users = new[] { new User {UserName = "User1"}, new User { UserName = "User2"} };
 
-            _shortLinks = new List<ShortLink>()
+            _shortLinks = new List<ShortLink>
             {
-                new ShortLink("ABCD", "https://google.com", _users.First()),
-                new ShortLink("ABCE", "https://yandex.com", _users.First()),
-                new ShortLink("ABCF", "https://bing.com")
+                new ShortLink("ABCD", "https://google.com", _users.First()) {CallsCount = 0},
+                new ShortLink("ABCE", "https://yandex.com", _users.First()) {CallsCount = 0},
+                new ShortLink("ABCF", "https://bing.com") {CallsCount = 10}
             };
 
             _shortLinksRepository = new Mock<IRepository<ShortLink>>();
@@ -97,6 +96,19 @@ namespace LinkShortener.Tests
             var links = await _service.GetAllShortenedLinksRelatedToUserAsync(_users.First());
 
             links.ShouldBeEquivalentTo(_shortLinks.Take(2));
+        }
+
+        [Fact]
+        public async Task RaiseCallsCountWhenFullLinkRequested()
+        {
+            const int expected = 10;
+
+            for (var i = 0; i < expected; i++)
+                await _service.GetFullLinkAsync("ABCD");
+
+            _shortLinks.First().CallsCount.ShouldBeEquivalentTo(expected);
+
+            _shortLinksRepository.Verify(r => r.UpdateAsync(), Times.Exactly(expected));
         }
     }
 }

@@ -12,10 +12,12 @@ namespace LinkShortener.API.Models.DTO
             Key = shortLink.Key;
             FullLink = shortLink.FullLink;
             DateCreated = shortLink.DateCreated;
+            CallsCount = shortLink.CallsCount;
         }
 
         public string Key { get; set; }
         public string FullLink { get; set; }
         public DateTime DateCreated { get; set; }
+        public int CallsCount { get; set; }
     }
 }

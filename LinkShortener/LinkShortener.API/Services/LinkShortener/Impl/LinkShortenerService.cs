@@ -38,7 +38,13 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
         {
             var allLinks = await _shortLinksRepository.GetAllAsync();
             var result = allLinks.SingleOrDefault(l => l.Key == shortLink);
-            return result == null ? null : new ShortLinkDto(result);
+
+            if (result == null) return null;
+
+            result.CallsCount++;
+            await _shortLinksRepository.UpdateAsync();
+
+            return new ShortLinkDto(result);
         }
 
         public async Task<IEnumerable<ShortLinkDto>> GetAllShortenedLinksRelatedToUserAsync(User user)
