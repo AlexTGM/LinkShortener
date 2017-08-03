@@ -30,19 +30,22 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
 
         public async Task<IEnumerable<ShortLinkDto>> GetAllShortenedLinksAsync()
         {
-            return (await _shortLinksRepository.GetAllAsync()).Select(x => new ShortLinkDto(x));
+            var allLinks = await _shortLinksRepository.GetAllAsync();
+            return allLinks.Select(x => new ShortLinkDto(x));
         }
 
         public async Task<ShortLinkDto> GetFullLinkAsync(string shortLink)
         {
-            return new ShortLinkDto(
-                (await _shortLinksRepository.GetAllAsync()).SingleOrDefault(l => l.Key == shortLink));
+            var allLinks = await _shortLinksRepository.GetAllAsync();
+            var result = allLinks.SingleOrDefault(l => l.Key == shortLink);
+            return result == null ? null : new ShortLinkDto(result);
         }
 
         public async Task<IEnumerable<ShortLinkDto>> GetAllShortenedLinksRelatedToUserAsync(User user)
         {
-            return (await _shortLinksRepository.GetAllAsync()).Where(l => l.User == user)
-                .Select(x => new ShortLinkDto(x));
+            var allLinks = await _shortLinksRepository.GetAllAsync();
+            var allLinksRelatedToUser = allLinks.Where(l => l.User == user);
+            return allLinksRelatedToUser.Select(x => new ShortLinkDto(x));
         }
 
         private async Task<bool> ShortLinkExists(string shortLink)

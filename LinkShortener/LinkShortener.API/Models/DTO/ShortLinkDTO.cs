@@ -7,6 +7,8 @@ namespace LinkShortener.API.Models.DTO
     {
         public ShortLinkDto(ShortLink shortLink)
         {
+            if (shortLink == null) return;
+
             Key = shortLink.Key;
             FullLink = shortLink.FullLink;
             DateCreated = shortLink.DateCreated;
