@@ -22,8 +22,8 @@ namespace LinkShortener.Tests
             _shortLinkGenerator = new Mock<IShortLinkGenerator>();
             _checkExistenceFunction = new Mock<Func<string, Task<bool>>>();
 
-            _collisionResolver = new BasicCollisionResolverBuilder(_shortLinkGenerator.Object)
-                .WithMaximumAttemptsCount(5).WithCheckExistenceFunction(_checkExistenceFunction.Object).Build();
+            _collisionResolver = new BasicCollisionResolverFactory(_shortLinkGenerator.Object)
+                .Create(_checkExistenceFunction.Object);
         }
 
         [Fact]

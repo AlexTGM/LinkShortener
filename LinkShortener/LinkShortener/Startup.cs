@@ -57,7 +57,7 @@ namespace LinkShortener
                 };
             });
 
-            services.AddSingleton<IBasicCollisionResolverBuilder, BasicCollisionResolverBuilder>();
+            services.AddSingleton<ICollisionResolverFactory<ICollisionResolver>, BasicCollisionResolverFactory>();
 
             services.AddSingleton<LinkShortenerContext>();
             services.AddSingleton<IRepository<ShortLink>, Repository<ShortLink>>();

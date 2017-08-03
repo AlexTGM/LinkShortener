@@ -9,21 +9,20 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
     public class LinkShortenerService : ILinkShortenerService
     {
         private readonly IRepository<ShortLink> _shortLinksRepository;
-        private readonly IBasicCollisionResolverBuilder _builder;
+        private readonly ICollisionResolver _collisionResolver;
 
-        public LinkShortenerService(IRepository<ShortLink> shortLinksRepository, IBasicCollisionResolverBuilder collisionResolverBuilder)
+        public LinkShortenerService(IRepository<ShortLink> shortLinksRepository, 
+            ICollisionResolverFactory<ICollisionResolver> collisionResolverFactory)
         {
             _shortLinksRepository = shortLinksRepository;
-            _builder = collisionResolverBuilder;
+            _collisionResolver = collisionResolverFactory.Create(ShortLinkExists);
         }
 
         public async Task<string> CreateShortLinkAsync(string fullLink, User user)
         {
-            var collisionResolver = _builder.WithMaximumAttemptsCount(5).WithCheckExistenceFunction(ShortLinkExists).Build();
+            var shortLink = await _collisionResolver.FindSuitableShortLinkAsync();
 
-            var shortLink = await collisionResolver.FindSuitableShortLinkAsync();
-
-            await _shortLinksRepository.InsertAsync(new ShortLink(shortLink, fullLink) {User = user});
+            await _shortLinksRepository.InsertAsync(new ShortLink(shortLink, fullLink, user));
 
             return shortLink;
         }
