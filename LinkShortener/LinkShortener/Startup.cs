@@ -77,10 +77,9 @@ namespace LinkShortener
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseRewriter(new RewriteOptions().AddRewrite("([A-Z0-9]{7})", "api/shortened/$1", false));
-
             app.UseIdentity();
             app.UseStaticFiles();
+            app.UseRewriter(new RewriteOptions().AddRewrite("([A-Z0-9]{7})", "api/shortened/$1", false));
             app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
         }
     }

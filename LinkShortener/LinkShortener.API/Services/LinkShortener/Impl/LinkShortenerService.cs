@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using LinkShortener.API.Exceptions;
 using LinkShortener.API.Models.Database;
 using LinkShortener.API.Models.DTO;
 using LinkShortener.API.Repository;
@@ -21,6 +23,12 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
 
         public async Task<string> CreateShortLinkAsync(string fullLink, User user)
         {
+            var pattern =
+                "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
+
+            if (!Regex.IsMatch(fullLink, pattern))
+                throw new InvalidLinkException();
+
             var shortLink = await _collisionResolver.FindSuitableShortLinkAsync();
 
             await _shortLinksRepository.InsertAsync(new ShortLink(shortLink, fullLink, user));

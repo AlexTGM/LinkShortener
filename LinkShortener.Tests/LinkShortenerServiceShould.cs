@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LinkShortener.API.Exceptions;
 using LinkShortener.API.Models.Database;
 using LinkShortener.API.Repository;
 using LinkShortener.API.Services.LinkShortener;
@@ -55,9 +56,30 @@ namespace LinkShortener.Tests
             _shortLinksRepository.Setup(r => r.InsertAsync(It.IsAny<ShortLink>()))
                 .Returns(() => Task.Factory.StartNew(() => _shortLinks.Add(expected)));
 
-            await _service.CreateShortLinkAsync(It.IsAny<string>(), It.IsAny<User>());
+            await _service.CreateShortLinkAsync("https://yahoo.com", It.IsAny<User>());
 
             (await _shortLinksRepository.Object.GetAllAsync()).Should().Contain(expected);
+        }
+
+        [Theory]
+        [InlineData("https://www.google.com/")]
+        [InlineData("http://www.google.com")]
+        [InlineData("www.google.com")]
+        public void WorkWithValidLinks(string fullLink)
+        {
+            Func<Task> function = async () => await _service.CreateShortLinkAsync(fullLink, It.IsAny<User>());
+
+            function.ShouldNotThrow();
+        }
+
+        [Theory]
+        [InlineData("htt://www.google.com")]
+        [InlineData("://www.google.com")]
+        public void ShouldThrowErrorIfInvalidLink(string fullLink)
+        {
+            Func<Task> function = async () => await _service.CreateShortLinkAsync(fullLink, It.IsAny<User>());
+
+            function.ShouldThrowExactly<InvalidLinkException>();
         }
 
         [Fact]
