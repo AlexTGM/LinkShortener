@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using AspNet.Security.OpenIdConnect.Primitives;
 using LinkShortener.API.Models.Database;
 using LinkShortener.API.Repository;
 using LinkShortener.API.Repository.Impl;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -35,10 +37,31 @@ namespace LinkShortener
         {
             services.AddMvc();
 
-            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<LinkShortenerContext>();
+            services.AddDbContext<LinkShortenerContext>(options =>
+            {
+                options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=link_shorneter;Trusted_Connection=True;");
+                options.UseOpenIddict();
+            });
+
+            services.AddIdentity<User, IdentityRole>()
+                    .AddEntityFrameworkStores<LinkShortenerContext>()
+                    .AddDefaultTokenProviders();
+
+            services.AddOpenIddict(options =>
+            {
+                options.AddEntityFrameworkCoreStores<LinkShortenerContext>();
+                options.AddMvcBinders();
+                options.EnableTokenEndpoint("/connect/token");
+                options.AllowPasswordFlow();
+                options.DisableHttpsRequirement();
+            });
 
             services.Configure<IdentityOptions>(options =>
             {
+                options.ClaimsIdentity.UserNameClaimType = OpenIdConnectConstants.Claims.Name;
+                options.ClaimsIdentity.UserIdClaimType = OpenIdConnectConstants.Claims.Subject;
+                options.ClaimsIdentity.RoleClaimType = OpenIdConnectConstants.Claims.Role;
+
                 options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
                 {
                     OnRedirectToLogin = ctx =>
@@ -77,7 +100,9 @@ namespace LinkShortener
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseOAuthValidation();
             app.UseIdentity();
+            app.UseOpenIddict();
             app.UseStaticFiles();
             app.UseRewriter(new RewriteOptions().AddRewrite("([A-Z0-9]{7})", "api/shortened/$1", false));
             app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
