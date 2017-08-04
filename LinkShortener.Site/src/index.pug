@@ -11,13 +11,30 @@ html
         
         script(src="systemjs.config.js")
 
+        link(rel="stylesheet" type="text/css" href="bootstrap.min.css")
+
         script
             | System.import('main.js').catch(function(err){ console.error(err); });
             
     body
-        header
-            p My soon to be menu
-        main
-            my-app Loading AppComponent content here ...
-        footer
-            cool footer with lots of copyrights
+        .container
+            nav.navbar.navbar-default
+                .container-fluid
+                    .navbar-header
+                        a.navbar-brand(href="#") Short.ly
+                    .navbar-collapsed
+                        ul.nav.navbar-nav
+                            li
+                                a(href="#") Get My Shortened Links
+                        ul.nav.navbar-nav.navbar-right
+                            li 
+                                a Hello Alexander!
+
+            main.container
+                my-app Loading Link Shortener Service...
+
+            footer.footer.container.navbar-fixed-bottom.navbar.navbar-default
+                .container-fluid
+                    .navbar-header
+                        ul.nav.navbar-nav
+                            li <a href="https://github.com/alextgm">Github</a>
