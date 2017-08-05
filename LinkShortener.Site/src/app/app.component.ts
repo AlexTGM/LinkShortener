@@ -1,7 +1,14 @@
 import { Component } from '@angular/core';
 
+import { AuthenticationService } from './_services/index';
+ 
 @Component({
-  selector: 'my-app',
-  template: `<link-shortener></link-shortener>`,
+    moduleId: module.id,
+    selector: 'app',
+    templateUrl: 'app.component.html'
 })
-export class AppComponent  { name = 'Angular'; }
+ 
+export class AppComponent {
+    constructor(private authenticationService: AuthenticationService) {
+    }
+}

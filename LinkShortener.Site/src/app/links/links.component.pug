@@ -1,0 +1,13 @@
+table.table.table-hover.table-sm
+    thead.thead-inverse
+        tr
+            th.text-center Short Link
+            th.text-center Full Link
+            th.text-center Date Created
+            th.text-center Calls Count
+    tbody(*ngFor="let link of links")
+        tr
+            th <a href="http://localhost:50110/{{link.key}}">{{link.key}}</a>
+            th <a href="{{link.fullLink}}">{{link.fullLink | slice:0:20}}</a>
+            th {{link.dateCreated | date:'medium'}}
+            th {{link.callsCount}} calls

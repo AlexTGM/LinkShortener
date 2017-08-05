@@ -99,11 +99,9 @@ namespace LinkShortener
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            app.UseOAuthValidation();
-            app.UseIdentity();
-            app.UseOpenIddict();
-            app.UseStaticFiles();
+            
+            app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            app.UseOAuthValidation().UseIdentity().UseOpenIddict().UseStaticFiles();
             app.UseRewriter(new RewriteOptions().AddRewrite("([A-Z0-9]{7})", "api/shortened/$1", false));
             app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
         }

@@ -38,7 +38,6 @@ namespace LinkShortener.API
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<dynamic> Post([FromBody] string fullLink)
         {
             return new {ShortLink = await _service.CreateShortLinkAsync(fullLink, await CurrentUser)};
