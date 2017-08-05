@@ -37,12 +37,6 @@ namespace LinkShortener
         {
             services.AddMvc();
 
-            services.AddDbContext<LinkShortenerContext>(options =>
-            {
-                options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=link_shorneter;Trusted_Connection=True;");
-                options.UseOpenIddict();
-            });
-
             services.AddIdentity<User, IdentityRole>()
                     .AddEntityFrameworkStores<LinkShortenerContext>()
                     .AddDefaultTokenProviders();
@@ -53,6 +47,7 @@ namespace LinkShortener
                 options.AddMvcBinders();
                 options.EnableTokenEndpoint("/connect/token");
                 options.AllowPasswordFlow();
+                options.AllowRefreshTokenFlow();
                 options.DisableHttpsRequirement();
             });
 
@@ -104,8 +99,6 @@ namespace LinkShortener
             app.UseOAuthValidation().UseIdentity().UseOpenIddict().UseStaticFiles();
             app.UseRewriter(new RewriteOptions().AddRewrite("([A-Z0-9]{7})", "api/shortened/$1", false));
             app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
-
-            ConfigureAuth(app);
         }
     }
 }

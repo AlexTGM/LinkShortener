@@ -31,7 +31,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LinkShortener.API\LinkShortener.API.csproj" />
-    <ProjectReference Include="..\SimpleTokenProvider\SimpleTokenProvider.csproj" />
   </ItemGroup>
 
 </Project>

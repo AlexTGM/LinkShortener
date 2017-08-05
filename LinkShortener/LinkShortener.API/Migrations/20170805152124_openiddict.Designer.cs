@@ -8,9 +8,10 @@ using LinkShortener.API.Repository.Impl;
 namespace LinkShortener.API.Migrations
 {
     [DbContext(typeof(LinkShortenerContext))]
-    partial class LinkShortenerContextModelSnapshot : ModelSnapshot
+    [Migration("20170805152124_openiddict")]
+    partial class openiddict
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")

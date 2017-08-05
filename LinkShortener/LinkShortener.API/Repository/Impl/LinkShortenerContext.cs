@@ -2,6 +2,7 @@ using LinkShortener.API.Models.Database;
 using LinkShortener.API.Repository.Maps;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LinkShortener.API.Repository.Impl
 {
@@ -12,6 +13,8 @@ namespace LinkShortener.API.Repository.Impl
             base.OnModelCreating(modelBuilder);
 
             ShortLinkMap.Map(modelBuilder.Entity<ShortLink>());
+
+            modelBuilder.UseOpenIddict();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

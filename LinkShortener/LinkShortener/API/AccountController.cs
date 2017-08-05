@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using LinkShortener.API.Models.Database;
 using LinkShortener.API.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,50 +11,39 @@ namespace LinkShortener.API
     [Produces("application/json")]
     public class AccountController : Controller
     {
-        private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         [HttpPost]
-        [Route("signup")]
-        public async Task<IdentityResult> SignUp([FromBody] SignUpRequest signUpRequest)
+        [Route("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] SignUpRequest signUpRequest)
         {
-            if (!ModelState.IsValid) return IdentityResult.Failed();
+            if (ModelState.IsValid)
+            {
+                var user = new User { UserName = signUpRequest.UserName, Email = signUpRequest.UserName };
+                var result = await _userManager.CreateAsync(user, signUpRequest.Password);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
 
-            var user = new User(signUpRequest.UserName);
+                AddErrors(result);
+            }
 
-            var identityResult = await _userManager.CreateAsync(user, signUpRequest.Password);
-
-            if (!identityResult.Succeeded) return identityResult;
-
-            await _signInManager.SignInAsync(user, true);
-
-            return IdentityResult.Success;
+            return BadRequest(ModelState);
         }
 
-        [HttpGet]
-        [Route("signout")]
-        public async Task SignOut()
+        private void AddErrors(IdentityResult result)
         {
-            await _signInManager.SignOutAsync();
-        }
-
-        [HttpPost]
-        [Route("signin")]
-        public async Task<bool> SignIn([FromBody] SignInRequest signInRequest)
-        {
-            var userName = signInRequest.UserName;
-            var password = signInRequest.Password;
-            var remember = signInRequest.Remember;
-
-            var result = await _signInManager.PasswordSignInAsync(userName, password, remember, false);
-
-            return result.Succeeded;
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
     }
 }
