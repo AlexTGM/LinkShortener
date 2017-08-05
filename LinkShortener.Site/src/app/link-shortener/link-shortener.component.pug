@@ -3,5 +3,4 @@
         input.form-control(type="text", [(ngModel)]="fullLink", placeholder="Paste a link to shorten it")
         span.input-group-btn
             button.btn.btn-default(type="button", (click)="shorten()") Shorten!
-    p your link: {{fullLink}}
-    p your short link: {{shortLink}} 
+    p(*ngIf="shortLink") your short link: {{shortLink}} 
