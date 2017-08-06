@@ -6,12 +6,13 @@ nav.navbar.navbar-default
             ul.nav.navbar-nav
                 li
                     a([routerLink]="['links']") Get My Shortened Links
-            ul.nav.navbar-nav.navbar-right
-                li(*ngIf="authService.loggedIn")
-                    p.nav.navbar-text(*ngIf="authService.loggedIn") Hello {{authService.username}}!
-                li
-                    a(*ngIf="!authService.loggedIn", [routerLink]="['login']") Log In
-                    a(*ngIf="authService.loggedIn", [routerLink]="['logout']") Log Out
+
+            ul.nav.navbar-nav.navbar-right(*ngIf="authService.loggedIn")
+                p.nav.navbar-text(*ngIf="authService.loggedIn") Hello {{authService.username}}!
+                a([routerLink]="['logout']") Log Out
+
+            ul.nav.navbar-nav.navbar-right(*ngIf="!authService.loggedIn")
+                a([routerLink]="['login']") Log In
 
 .container.jumbotron
     .col-sm-10.col-sm-offset-1

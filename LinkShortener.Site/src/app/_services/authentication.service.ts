@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response, RequestOptions, URLSearchParams } from '@angular/http';
+import { Observer } from 'rxjs/Observer';
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/map'
 
@@ -19,7 +20,7 @@ export class AuthenticationService {
         return localStorage.getItem('current_user');
     }
 
-    login(username: string, password: string) {
+    login(username: string, password: string) : Observable<any> {
         const headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
         const options = new RequestOptions({ headers: headers })
 
@@ -30,7 +31,7 @@ export class AuthenticationService {
         body.set('grant_type', "password");
         body.set('scope', "offline_access openid");
 
-        return new Observable(observer => {
+        return new Observable<any>((observer: Observer<any>)  => {
             this.http.post(this.tokenEndpoint, body.toString(), options)
                 .map(res => res.json())
                 .subscribe(res => {

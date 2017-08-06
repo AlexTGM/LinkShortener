@@ -9,6 +9,6 @@ import { AuthenticationService } from './_services/index';
 })
  
 export class AppComponent {
-    constructor(private authenticationService: AuthenticationService) {
+    constructor(private authService: AuthenticationService) {
     }
 }
