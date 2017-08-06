@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observer } from 'rxjs/Observer';
 import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/do'
 
 import { tokenNotExpired } from 'angular2-jwt';
@@ -22,7 +21,7 @@ export class AuthenticationService {
         return localStorage.getItem('current_user');
     }
 
-    login(username: string, password: string) : Observable<any> {
+    login(username: string, password: string) {
         const headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
         const options = new RequestOptions({ headers: headers })
 
@@ -33,18 +32,14 @@ export class AuthenticationService {
         body.set('grant_type', "password");
         body.set('scope', "offline_access openid");
 
-        return new Observable<any>((observer: Observer<any>)  => {
-            this.http.post(this.tokenEndpoint, body.toString(), options)
-                .map(res => res.json())
-                .subscribe(res => {
-                    localStorage.setItem('current_user', username);
-                    localStorage.setItem('token', res.id_token);
-                    localStorage.setItem('refresh_token', res.refresh_token);
+        return this.http.post(this.tokenEndpoint, body.toString(), options)
+                        .do(res => {
+                            var json = res.json();
 
-                    observer.next(res);
-                    observer.complete();
-                });
-        });
+                            localStorage.setItem('current_user', username);
+                            localStorage.setItem('token', json.id_token);
+                            localStorage.setItem('refresh_token', json.refresh_token);
+                        });
     }
 
     register(username: string, password: string) : Observable<Response> {

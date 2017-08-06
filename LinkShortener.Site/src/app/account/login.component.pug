@@ -4,7 +4,7 @@
         | Password: qweQWE123!
 
     h2 Login
-    form(name="form", (ngSubmit)="f.form.valid && login()", #f="ngForm", novalidate)
+    form(name="form", (ngSubmit)="f.form.valid && onSubmit(empForm, $event)", #f="ngForm", novalidate)
         .form-group([ngClass]="{ 'has-error': f.submitted && !username.valid }")
             label(for="username") Username
             input.form-control(type="text", name="username", [(ngModel)]="model.username", #username="ngModel", required)
@@ -14,6 +14,6 @@
             input.form-control(type="password", name="password", [(ngModel)]="model.password", #password="ngModel", required)
             .help-block(*ngIf="f.submitted && !password.valid") Password is required
         .form-group
-            button.btn.btn-primary([disabled]="loading") Login
+            button.btn.btn-primary([disabled]="loading", type="submit") Login
             img(*ngIf="loading", src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==")
         .alert.alert-danger(*ngIf="error") {{error}}
