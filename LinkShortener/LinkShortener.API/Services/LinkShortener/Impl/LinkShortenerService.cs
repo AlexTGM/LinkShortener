@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LinkShortener.API.Exceptions;
+using LinkShortener.API.Models;
 using LinkShortener.API.Models.Database;
 using LinkShortener.API.Models.DTO;
 using LinkShortener.API.Repository;
@@ -12,9 +13,9 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
     public class LinkShortenerService : ILinkShortenerService
     {
         private readonly ICollisionResolver _collisionResolver;
-        private readonly IRepository<ShortLink> _shortLinksRepository;
+        private readonly IRepository _shortLinksRepository;
 
-        public LinkShortenerService(IRepository<ShortLink> shortLinksRepository,
+        public LinkShortenerService(IRepository shortLinksRepository,
             ICollisionResolverFactory<ICollisionResolver> collisionResolverFactory)
         {
             _shortLinksRepository = shortLinksRepository;
@@ -57,9 +58,21 @@ namespace LinkShortener.API.Services.LinkShortener.Impl
 
         public async Task<IEnumerable<ShortLinkDto>> GetAllShortenedLinksRelatedToUserAsync(User user)
         {
-            var allLinks = await _shortLinksRepository.GetAllAsync();
-            var allLinksRelatedToUser = allLinks.Where(l => l.User == user);
-            return allLinksRelatedToUser.Select(x => new ShortLinkDto(x));
+            var allLinks = await _shortLinksRepository.GetAllAsync(user);
+            return allLinks.Select(x => new ShortLinkDto(x));
+        }
+
+        public async Task<PaginatedData<ShortLinkDto>> GetAllShortenedLinksRelatedToUserPaginatedAsync(User user, int skip, int take)
+        {
+            var links = await _shortLinksRepository.GetPageAsync(skip, take, user);
+
+            var shortLinkDtos = links.Data.Select(l => new ShortLinkDto(l));
+
+            return new PaginatedData<ShortLinkDto>
+            {
+                Data = shortLinkDtos, Page = skip / take + 1,
+                Size = take, TotalCount = links.TotalCount
+            };
         }
 
         private async Task<bool> ShortLinkExists(string shortLink)

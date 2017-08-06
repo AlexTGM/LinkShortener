@@ -10,10 +10,15 @@
     <PackageReference Include="Moq" Version="4.7.99" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    
+    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="1.0.0-*" />
+    <PackageReference Include="OpenIddict" Version="1.0.0-*" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="1.0.0-*" />
+    <PackageReference Include="OpenIddict.Mvc" Version="1.0.0-*" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LinkShortener\LinkShortener.API\LinkShortener.API.csproj" />
+    <ProjectReference Include="..\LinkShortener.API\LinkShortener.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

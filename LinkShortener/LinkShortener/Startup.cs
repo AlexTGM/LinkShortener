@@ -78,7 +78,7 @@ namespace LinkShortener
             services.AddSingleton<ICollisionResolverFactory<ICollisionResolver>, BasicCollisionResolverFactory>();
 
             services.AddSingleton<LinkShortenerContext>();
-            services.AddSingleton<IRepository<ShortLink>, Repository<ShortLink>>();
+            services.AddSingleton<IRepository, Repository>();
 
             services.AddSingleton<IShortLinkGenerator, ShortLinkGenerator>();
             services.AddSingleton<ILinkShortenerService, LinkShortenerService>();

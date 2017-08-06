@@ -15,7 +15,7 @@ namespace LinkShortener.Tests
 {
     public class LinkShortenerServiceShould
     {
-        private readonly Mock<IRepository<ShortLink>> _shortLinksRepository;
+        private readonly Mock<IRepository> _shortLinksRepository;
 
         private readonly ILinkShortenerService _service;
 
@@ -33,8 +33,9 @@ namespace LinkShortener.Tests
                 new ShortLink("ABCF", "https://bing.com") {CallsCount = 10}
             };
 
-            _shortLinksRepository = new Mock<IRepository<ShortLink>>();
-            _shortLinksRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(_shortLinks);
+            _shortLinksRepository = new Mock<IRepository>();
+            _shortLinksRepository.Setup(r => r.GetAllAsync(It.IsAny<User>())).ReturnsAsync(_shortLinks);
+            _shortLinksRepository.Setup(r => r.GetAllAsync(_users.First())).ReturnsAsync(_shortLinks.Take(2));
 
             var collisionResolver = new Mock<ICollisionResolver>();
             collisionResolver.Setup(c => c.FindSuitableShortLinkAsync(It.IsAny<int>())).ReturnsAsync(It.IsAny<string>());
@@ -85,11 +86,11 @@ namespace LinkShortener.Tests
         [Fact]
         public async Task GetAllShortenedLinks()
         {
-            _shortLinksRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(_shortLinks);
+            _shortLinksRepository.Setup(r => r.GetAllAsync(It.IsAny<User>())).ReturnsAsync(_shortLinks);
 
             var actual = await _service.GetAllShortenedLinksAsync();
 
-            _shortLinksRepository.Verify(r => r.GetAllAsync(), Times.Once);
+            _shortLinksRepository.Verify(r => r.GetAllAsync(It.IsAny<User>()), Times.Once);
             
             actual.ShouldBeEquivalentTo(_shortLinks);
         }

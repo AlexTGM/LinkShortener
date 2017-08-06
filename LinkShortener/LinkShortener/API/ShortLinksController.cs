@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using LinkShortener.API.Models;
 using LinkShortener.API.Models.Database;
 using LinkShortener.API.Models.DTO;
 using LinkShortener.API.Services.LinkShortener;
@@ -26,9 +26,9 @@ namespace LinkShortener.API
 
         [HttpGet]
         [Authorize]
-        public async Task<IEnumerable<ShortLinkDto>> Get()
+        public async Task<PaginatedData<ShortLinkDto>> Get(int skip, int take)
         {
-            return await _service.GetAllShortenedLinksRelatedToUserAsync(await CurrentUser);
+            return await _service.GetAllShortenedLinksRelatedToUserPaginatedAsync(await CurrentUser, skip, take);
         }
 
         [HttpGet("{shortLink}", Name = "Get")]
