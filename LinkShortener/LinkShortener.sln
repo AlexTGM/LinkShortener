@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkShortener", "LinkShortener\LinkShortener.csproj", "{AE680B08-3F42-45D1-A1BD-5F7187534FFA}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{C4A81209-6A67-4EB2-A0FA-4CC18865EF85}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkShortener.Tests", "..\LinkShortener.Tests\LinkShortener.Tests.csproj", "{D12C0A4C-F699-46E5-AF85-66FD62C97C23}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkShortener.API", "LinkShortener.API\LinkShortener.API.csproj", "{771B2C9F-F48B-4133-92B4-55291CACC33D}"
