@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Primitives;
 using LinkShortener.API.Models.Database;
@@ -15,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LinkShortener
 {
@@ -43,8 +45,10 @@ namespace LinkShortener
 
             services.AddOpenIddict(options =>
             {
+                options.AddEphemeralSigningKey();
                 options.AddEntityFrameworkCoreStores<LinkShortenerContext>();
                 options.AddMvcBinders();
+                options.UseJsonWebTokens();
                 options.EnableTokenEndpoint("/connect/token");
                 options.AllowPasswordFlow();
                 options.AllowRefreshTokenFlow();
@@ -85,18 +89,33 @@ namespace LinkShortener
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
-            }
+            if (env.IsDevelopment()) { app.UseDeveloperExceptionPage().UseBrowserLink(); }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            
-            app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-            app.UseOAuthValidation().UseIdentity().UseOpenIddict().UseStaticFiles();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
+
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            {
+                Authority = "http://localhost:50110/",
+                Audience = "http://localhost:50110/",
+                RequireHttpsMetadata = false,
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    NameClaimType = OpenIdConnectConstants.Claims.Subject,
+                    RoleClaimType = OpenIdConnectConstants.Claims.Role
+                }
+            });
+
+            app.UseCors(options => options.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            app.UseOpenIddict().UseStaticFiles();
             app.UseRewriter(new RewriteOptions().AddRewrite("([A-Z0-9]{7})", "api/shortened/$1", false));
             app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
         }
