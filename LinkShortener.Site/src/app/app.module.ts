@@ -9,12 +9,12 @@ import { LinkShortenerComponent } from './link-shortener/link-shortener.componen
 
 import { AuthGuard } from './_guards/index';
 import { AuthenticationService, LinksService } from './_services/index';
-import { LoginComponent, LogoutComponent } from './account/index';
+import { LoginComponent, LogoutComponent, RegisterComponent } from './account/index';
 import { LinksComponent } from './links/links.component';
 
 @NgModule({
   imports:      [ BrowserModule, FormsModule, HttpModule, routing,  ],
-  declarations: [ AppComponent, LinkShortenerComponent, LoginComponent, LogoutComponent, LinksComponent ],
+  declarations: [ AppComponent, LinkShortenerComponent, LoginComponent, LogoutComponent, LinksComponent, RegisterComponent ],
   providers:    [ AuthGuard, AuthenticationService, LinksService, AuthHttp, 
                   provideAuth({
                       headerName: 'Authorization',

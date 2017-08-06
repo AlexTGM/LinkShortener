@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, Response, RequestOptions, URLSearchParams } from '@angular/http';
+import { Http, Headers, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observer } from 'rxjs/Observer';
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/do'
 
 import { tokenNotExpired } from 'angular2-jwt';
 
 @Injectable()
 export class AuthenticationService {
     private tokenEndpoint = 'http://localhost:50110/connect/token';
+    private registerEndpoint = 'http://localhost:50110/api/account/register';
 
     constructor(private http: Http) { }
 
@@ -43,6 +45,10 @@ export class AuthenticationService {
                     observer.complete();
                 });
         });
+    }
+
+    register(username: string, password: string) : Observable<Response> {
+        return this.http.post(this.registerEndpoint, {username, password});
     }
 
     logout() {

@@ -15,6 +15,8 @@ nav.navbar.navbar-default
 
             ul.nav.navbar-nav.navbar-right(*ngIf="!authService.loggedIn")
                 li
+                    a([routerLink]="['register']") Register
+                li
                     a([routerLink]="['login']") Log In
 
 .container.jumbotron
