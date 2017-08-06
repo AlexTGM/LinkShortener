@@ -8,11 +8,14 @@ nav.navbar.navbar-default
                     a([routerLink]="['links']") Get My Shortened Links
 
             ul.nav.navbar-nav.navbar-right(*ngIf="authService.loggedIn")
-                p.nav.navbar-text(*ngIf="authService.loggedIn") Hello {{authService.username}}!
-                a([routerLink]="['logout']") Log Out
+                li
+                    p.nav.navbar-text(*ngIf="authService.loggedIn") Hello {{authService.username}}!
+                li
+                    a([routerLink]="['logout']") Log Out
 
             ul.nav.navbar-nav.navbar-right(*ngIf="!authService.loggedIn")
-                a([routerLink]="['login']") Log In
+                li
+                    a([routerLink]="['login']") Log In
 
 .container.jumbotron
     .col-sm-10.col-sm-offset-1
