@@ -8,7 +8,7 @@ import { AuthenticationService } from '../_services/index';
     templateUrl: 'login.component.html'
 })
  
-export class LoginComponent implements OnInit {
+export class LoginComponent {
     model: any = {};
     loading = false;
     error = '';
@@ -17,20 +17,9 @@ export class LoginComponent implements OnInit {
         private router: Router,
         private authenticationService: AuthenticationService) { }
  
-    ngOnInit() {
-        this.authenticationService.logout();
-    }
- 
     login() {
         this.loading = true;
         this.authenticationService.login(this.model.username, this.model.password)
-            .subscribe(result => {
-                if (result === true) {
-                    this.router.navigate(['links']);
-                } else {
-                    this.error = 'Username or password is incorrect';
-                    this.loading = false;
-                }
-            });
+            .subscribe(() => this.router.navigate(['/']), error => this.error = error);
     }
 }

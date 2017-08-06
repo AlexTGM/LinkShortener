@@ -1,15 +1,18 @@
 nav.navbar.navbar-default
-    .container-fluid
+    .container
         .navbar-header
-            a.navbar-brand(href="#") Short.ly
+            a.navbar-brand([routerLink]="['']") Short.ly
         .navbar-collapsed
             ul.nav.navbar-nav
                 li
-                    a(href="links") Get My Shortened Links
+                    a([routerLink]="['links']") Get My Shortened Links
             ul.nav.navbar-nav.navbar-right
-                login
+                li(*ngIf="authService.loggedIn")
+                    p.nav.navbar-text(*ngIf="authService.loggedIn") Hello {{authService.username}}!
+                li
+                    a(*ngIf="!authService.loggedIn", [routerLink]="['login']") Log In
+                    a(*ngIf="authService.loggedIn", [routerLink]="['logout']") Log Out
 
-.jumbotron
-    .container
-        .col-sm-10.col-sm-offset-1
-            router-outlet
+.container.jumbotron
+    .col-sm-10.col-sm-offset-1
+        router-outlet

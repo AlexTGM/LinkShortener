@@ -1,19 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response, RequestOptions, URLSearchParams } from '@angular/http';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/map'
- 
+
+import { tokenNotExpired } from 'angular2-jwt';
+
 @Injectable()
 export class AuthenticationService {
-    public token: string;
- 
-    constructor(private http: Http) {
-        var currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        this.token = currentUser && currentUser.token;
+    private tokenEndpoint = 'http://localhost:50110/connect/token';
+
+    constructor(private http: Http) { }
+
+    get loggedIn() : boolean {
+        return tokenNotExpired();
     }
- 
-    login(username: string, password: string): Observable<boolean> {
-        const headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' }); 
+
+    get username() : string {
+        return localStorage.getItem('current_user');
+    }
+
+    login(username: string, password: string) {
+        const headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
         const options = new RequestOptions({ headers: headers })
 
         const body = new URLSearchParams();
@@ -21,23 +28,25 @@ export class AuthenticationService {
         body.set("username", username);
         body.set('password', password);
         body.set('grant_type', "password");
-        body.set('scope', "email");
+        body.set('scope', "offline_access openid");
 
-        return this.http.post('http://localhost:50110/connect/token', body.toString(), options)
-            .map((response: Response) => {
-                let access_token = response.json() && response.json().access_token;
-                if (access_token) {
-                    this.token = access_token;
- 
-                    localStorage.setItem('currentUser', JSON.stringify({ username: username, token: access_token }));
- 
-                    return true;
-                } else { return false; }
-            });
+        return new Observable(observer => {
+            this.http.post(this.tokenEndpoint, body.toString(), options)
+                .map(res => res.json())
+                .subscribe(res => {
+                    localStorage.setItem('current_user', username);
+                    localStorage.setItem('token', res.id_token);
+                    localStorage.setItem('refresh_token', res.refresh_token);
+
+                    observer.next(res);
+                    observer.complete();
+                });
+        });
     }
- 
-    logout(): void {
-        this.token = null;
-        localStorage.removeItem('currentUser');
+
+    logout() {
+        localStorage.removeItem('current_user');
+        localStorage.removeItem('token'); 
+        localStorage.removeItem('refresh_token'); 
     }
 }
