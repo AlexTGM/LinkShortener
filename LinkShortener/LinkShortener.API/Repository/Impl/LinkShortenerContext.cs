@@ -22,7 +22,7 @@ namespace LinkShortener.API.Repository.Impl
             base.OnConfiguring(optionsBuilder);
 
             optionsBuilder.UseSqlServer(
-                "Server=(localdb)\\mssqllocaldb;Database=link_shorneter;Trusted_Connection=True;");
+                "Server=(localdb)\\mssqllocaldb;Database=link_shorneter;Trusted_Connection=True;MultipleActiveResultSets=True;");
         }
     }
 }
