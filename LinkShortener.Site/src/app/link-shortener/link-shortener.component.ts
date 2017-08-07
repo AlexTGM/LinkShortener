@@ -13,10 +13,18 @@ export class LinkShortenerComponent {
     fullLink: string;
     shortLink: string;
  
+    loading: boolean;
+    error: string;
+
     constructor(private linksService: LinksService) { }
 
     shorten() {
+        this.loading = true;
+
         this.linksService.createLink(this.fullLink)
-            .subscribe(l => this.shortLink = l.shortLink);
+            .subscribe(l => {
+                this.shortLink = l.shortLink;
+                this.loading = false;
+            });
     }
 }

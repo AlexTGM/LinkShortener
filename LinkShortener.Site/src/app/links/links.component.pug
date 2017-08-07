@@ -1,13 +1,21 @@
-table.table.table-hover.table-sm
-    thead.thead-inverse
-        tr
-            th.text-center Short Link
-            th.text-center Full Link
-            th.text-center Date Created
-            th.text-center Calls Count
-    tbody(*ngFor="let link of links")
-        tr
-            th <a href="http://localhost:50110/{{link.key}}">{{link.key}}</a>
-            th <a href="{{link.fullLink}}">{{link.fullLink | slice:0:20}}</a>
-            th {{link.dateCreated | date:'medium'}}
-            th {{link.callsCount}} calls
+.container
+    .row
+        .alert.alert-danger(*ngIf="paginationService.data.length == 0") no links to show!
+
+        .list-group.col-lg-6(*ngFor="let link of paginationService.data")
+            a.list-group-item(href='http://localhost:50110/{{link.key}}', 
+                              title='{{link.fullLink}}')
+                .row
+                    .col-lg-9
+                        p {{link.fullLink | ellipsis:30}}
+                    .col-lg-3.text-right
+                        p {{link.key}}
+                .row.list-group-item-text
+                    .col-lg-6 {{link.dateCreated | date:'medium'}}
+                    .col-lg-6.text-right {{link.callsCount}} calls
+
+nav
+    ul.pagination
+        li(*ngFor="let page of paginationService.pages", 
+            [class.active]="paginationService.currentPage == page") 
+            a((click)="getPage(page)", style="cursor: pointer") {{page}}
